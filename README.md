@@ -1,31 +1,57 @@
-# Campus-Trade 软件测试
+# Campus-Trade 校园二手交易平台课程实验
 
-本工程用于《实验三 软件测试实验报告》的可执行验证，覆盖校园二手交易平台 10 个模块、50 个测试用例。
-代码只依赖 JDK，不需要 Maven、Spring Boot 或 MySQL。
+本仓库是“2024 级网络工程第 2 组”软件工程实验的阶段成果，包含实验一至实验三的四份报告、十模块核心业务测试程序、MySQL 建表与示例数据，以及数据库结构和事务校验程序。
 
-## 目录
+规划中的完整平台采用 Vue 3、Spring Boot 和 MySQL。当前仓库还没有实现 Vue 前端、Spring Boot 服务或完整的 Web 交易流程；现有 Java 程序是独立运行的实验验证代码。
 
-```
+## 已完成内容
+
+| 实验成果 | 主要内容 |
+|---|---|
+| 实验一 项目选题与任务分解 | 项目范围、8 人分工、10 个模块、29 项任务与进度计划 |
+| 实验二 需求分析 | REQ-01 至 REQ-16、用例模型、E-R 模型和分层数据流图 |
+| 实验三 软件设计 | 分层架构、模块接口、订单状态机、13 张表及设计追踪 |
+| 实验三 软件测试 | 10 个模块 × 5 个用例，首轮 40/50、回归 50/50 |
+| MySQL 数据库实验 | 建表、示例数据、5 项结构、联查和事务校验 |
+
+## 技术环境
+
+| 实验部分 | 运行依赖 |
+|---|---|
+| 核心业务逻辑测试 | JDK 21 或更高版本，仅使用 Java 标准库 |
+| MySQL 数据库实验 | MySQL 8.0/9.x、MySQL Connector/J 8.0.31 |
+| 实验文档 | Word 或兼容 DOCX 的软件 |
+| 后续完整平台 | Vue 3、Spring Boot、MySQL（尚未实现） |
+
+核心测试程序使用内存夹具验证业务规则，不连接数据库；MySQL 实验则必须启动数据库。两种测试不能混为同一种端到端验证。
+
+## 仓库结构
+
+```text
 Campus-Trade/
-├── src/CampusMarketTest.java     # 测试程序（10  modules × 5 cases）
-├── out/                          # 编译输出（自动生成）
-├── 测试结果_回归.csv              # 运行后生成
-└── 测试结果_首轮.csv              # --legacy 模式生成的缺陷复现结果
+├── src/
+│   ├── CampusMarketTest.java     # 10 模块 × 5 用例的核心业务测试
+│   └── DatabaseSmokeTest.java    # MySQL 结构、联查和事务校验
+├── db/
+│   ├── schema.sql                # 13 张业务表及约束
+│   ├── data.sql                  # 用户、商品、订单等示例数据
+│   ├── db.properties.example     # 数据库连接配置模板
+│   └── README.md                 # MySQL 实验操作说明
+├── docs/                         # 实验一至实验三四份 DOCX 报告
+├── lib/                          # MySQL JDBC 驱动
+└── .idea/                        # IntelliJ IDEA 工程配置
 ```
 
-## 在 IntelliJ IDEA 中运行
+`out/`、`db/db.properties` 和运行生成的 `测试结果_*.csv` 不进入版本库。
 
-1. 打开工程后等待索引完成，`src` 已标记为源码目录，Project SDK 为 JDK 21。
-2. 打开 `CampusMarketTest.java`，点击 `main` 方法左侧的绿色三角运行。
-3. 需要复现首轮缺陷时，在 Run/Debug Configurations 的 Program arguments 里填 `--legacy` 再运行。
+## 核心业务逻辑测试
 
-## 命令行运行
+在仓库根目录执行：
 
 ```bash
-cd "/Users/dongwenjie/IdeaProjects/Campus-Trade"
-
 # 编译
-javac -encoding UTF-8 -d out/production/Campus-Trade src/CampusMarketTest.java
+javac -encoding UTF-8 -d out/production/Campus-Trade \
+  src/CampusMarketTest.java
 
 # 修复后回归：预期 50/50 通过
 java -cp out/production/Campus-Trade CampusMarketTest
@@ -34,53 +60,63 @@ java -cp out/production/Campus-Trade CampusMarketTest
 java -cp out/production/Campus-Trade CampusMarketTest --legacy
 ```
 
-## 预期输出
+两条命令分别生成 `测试结果_回归.csv` 和 `测试结果_首轮.csv`。10 个失败用例对应 BUG-01 至 BUG-10。
 
+## MySQL 数据库实验
+
+1. 启动 MySQL 8.0/9.x。
+2. 复制配置模板并填写本机密码：
+
+```bash
+cp db/db.properties.example db/db.properties
 ```
-合计 50 个用例：通过 50，失败 0，通过率 100.0%      # 默认模式
-合计 50 个用例：通过 40，失败 10，通过率 80.0%      # --legacy 模式
-```
 
-首轮失败的 10 条用例分别对应 BUG-01 至 BUG-10，与《实验三 软件测试实验报告》中的缺陷表一一对应。
-
-## 数据库
-
-数据库结构设计与建表脚本在 `db/` 目录：
-
-| 文件 | 说明 |
-|---|---|
-| `db/schema.sql` | 建库与 13 张表（主外键、索引、CHECK 约束） |
-| `db/data.sql` | 示例数据：5 个用户、6 件商品、2 笔订单及支付/评价/举报/消息 |
-| `db/README.md` | MySQL 启动、建表、IDEA 数据源配置的完整步骤 |
-| `src/DatabaseSmokeTest.java` | 连接校验：表数量、外键、联查、事务回滚 |
-| `lib/mysql-connector-j-8.0.31.jar` | JDBC 驱动，已加入模块依赖 |
-
-启动 MySQL 后执行：
+3. 导入结构和示例数据：
 
 ```bash
 mysql -u root -p < db/schema.sql
 mysql -u root -p < db/data.sql
 ```
 
-随后运行 `DatabaseSmokeTest` 的 `main`，预期 5 项校验全部通过。
+`schema.sql` 会重建 `campus_trade` 中的 13 张表，只应在实验数据库执行。
 
-## 版本管理（GitHub）
+4. 编译并运行数据库校验：
 
-本仓库已准备好 `.gitignore`（排除 `db/db.properties`、`out/`、测试结果 CSV）和一键推送脚本 `git-push.sh`。
+```bash
+javac -encoding UTF-8 -d out/production/Campus-Trade \
+  -cp lib/mysql-connector-j-8.0.31.jar \
+  src/DatabaseSmokeTest.java
 
-1. 在 https://github.com/new 新建仓库，名称建议 `Campus-Trade`，可见性选 **Private**，不要勾选 README/.gitignore。
-2. 在项目目录执行：
+java -cp "out/production/Campus-Trade:lib/mysql-connector-j-8.0.31.jar" \
+  DatabaseSmokeTest
+```
+
+预期通过表数量、外键、示例数据、商品联查和事务回滚共 5 项检查。详细步骤见 [数据库说明](db/README.md)。
+
+## 实验报告
+
+- [实验一 项目选题与任务分解](<docs/实验一 项目选题与任务分解（8人版）.docx>)
+- [实验二 需求分析](<docs/实验二 需求分析实验报告.docx>)
+- [实验三 软件设计](<docs/实验三 软件设计实验报告.docx>)
+- [实验三 软件测试](<docs/实验三 软件测试实验报告.docx>)
+
+## 当前限制
+
+- `CampusMarketTest` 验证核心规则、状态和缺陷回归，不等于真实 HTTP 接口、浏览器页面或数据库事务测试。
+- MySQL 脚本和 `DatabaseSmokeTest` 已覆盖数据库结构、联查及基础事务，但完整前后端联调尚未完成。
+- 并发下单、重复支付、权限缓存和 200 并发性能目标仍需在完整平台中继续验证。
+
+## 提交与推送
+
+```bash
+git add -A
+git commit -m "说明本次修改内容"
+git push
+```
+
+也可以使用仓库中的脚本；提交消息可选，未填写时会自动附加当前时间，避免连续提交显示成相同标题：
 
 ```bash
 ./git-push.sh
+./git-push.sh https://github.com/Dong-w-j-666/Campus-Trade.git "补充项目说明"
 ```
-
-   按提示粘贴仓库地址（形如 `https://github.com/用户名/Campus-Trade.git`），首次推送会要求登录 GitHub。
-
-3. 也可以直接传入地址：
-
-```bash
-./git-push.sh https://github.com/用户名/Campus-Trade.git
-```
-
-仓库内容包含：`src/` 测试与数据库校验程序、`db/` 建表与示例数据、`docs/` 四份实验报告、`lib/` JDBC 驱动。数据库密码不会入库。
