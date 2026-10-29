@@ -1,0 +1,14 @@
+# 数据库密码不要提交
+db/db.properties
+
+# 编译产物
+out/
+*.class
+
+# 运行生成的结果
+测试结果_*.csv
+
+# IDE 本地状态
+.idea/workspace.xml
+.idea/shelf/
+.DS_Store
