@@ -79,11 +79,16 @@ INSERT INTO t_order (order_id, order_no, goods_id, buyer_id, seller_id, amount, 
 (1001, 'CT202610150001', 101, 4, 2, 25.00,  'FINISHED', '主校区', '2026-10-15 10:05:00', '2026-10-15 18:00:00'),
 (1002, 'CT202610160002', 102, 5, 2, 120.00, 'UNPAID',   '主校区', NULL, NULL);
 
-INSERT INTO t_payment (trade_no, order_id, amount, pay_method, status, refund_amount, paid_at) VALUES
-('SB202610150001', 1001, 25.00, 'SANDBOX', 'SUCCESS', 0.00, '2026-10-15 10:05:00');
+INSERT INTO t_payment (
+  trade_no, order_id, amount, pay_method, status, refund_amount, refund_status,
+  settlement_amount, settlement_status, paid_at, refunded_at, settled_at
+) VALUES
+('SB202610150001', 1001, 25.00, 'SANDBOX', 'SUCCESS', 0.00, 'NONE',
+ 24.50, 'SETTLED', '2026-10-15 10:05:00', NULL, '2026-10-15 18:00:10');
 
 INSERT INTO t_evaluation (order_id, evaluator_id, target_id, score, content, tags) VALUES
-(1001, 4, 2, 5, '书很新，人也很好，约在主楼交易很顺利', '描述相符,交易爽快');
+(1001, 4, 2, 5, '书很新，人也很好，约在主楼交易很顺利', '描述相符,交易爽快'),
+(1001, 2, 4, 5, '买家准时到场，交易顺利', '守约,沟通顺畅');
 
 INSERT INTO t_report (goods_id, reporter_id, report_type, evidence, status, priority) VALUES
 (105, 4, '违禁品', '商品描述与实物不符', 'REJECTED', 1);

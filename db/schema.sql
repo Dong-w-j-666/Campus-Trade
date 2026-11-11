@@ -146,7 +146,7 @@ CREATE TABLE t_order (
   CONSTRAINT fk_order_seller FOREIGN KEY (seller_id) REFERENCES t_user (user_id)
 ) ENGINE=InnoDB COMMENT='订单表';
 
--- 9. 支付流水表（与订单 1:1）
+-- 9. 支付、退款与结算流水表（与订单 1:1）
 CREATE TABLE t_payment (
   payment_id    BIGINT        NOT NULL AUTO_INCREMENT COMMENT '流水ID',
   trade_no      VARCHAR(64)   NOT NULL COMMENT '支付流水号',
@@ -155,14 +155,22 @@ CREATE TABLE t_payment (
   pay_method    VARCHAR(20)   NOT NULL DEFAULT 'SANDBOX' COMMENT '支付方式',
   status        VARCHAR(20)   NOT NULL DEFAULT 'SUCCESS' COMMENT 'SUCCESS/FAILED/REFUNDED',
   refund_amount DECIMAL(10,2) NOT NULL DEFAULT 0.00 COMMENT '退款金额',
+  refund_status VARCHAR(20)   NOT NULL DEFAULT 'NONE' COMMENT 'NONE/REQUESTED/APPROVED/REFUNDED/REJECTED',
+  refund_reason VARCHAR(255)           DEFAULT NULL COMMENT '退款原因',
+  settlement_amount DECIMAL(10,2) NOT NULL DEFAULT 0.00 COMMENT '卖家应结金额',
+  settlement_status VARCHAR(20) NOT NULL DEFAULT 'PENDING' COMMENT 'PENDING/SETTLED',
   paid_at       DATETIME      NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  refunded_at   DATETIME               DEFAULT NULL COMMENT '退款完成时间',
+  settled_at    DATETIME               DEFAULT NULL COMMENT '结算完成时间',
   PRIMARY KEY (payment_id),
   UNIQUE KEY uk_payment_trade_no (trade_no),
   UNIQUE KEY uk_payment_order (order_id),
-  CONSTRAINT fk_payment_order FOREIGN KEY (order_id) REFERENCES t_order (order_id)
-) ENGINE=InnoDB COMMENT='支付流水表';
+  CONSTRAINT fk_payment_order FOREIGN KEY (order_id) REFERENCES t_order (order_id),
+  CONSTRAINT chk_payment_refund CHECK (refund_amount >= 0 AND refund_amount <= amount),
+  CONSTRAINT chk_payment_settlement CHECK (settlement_amount >= 0)
+) ENGINE=InnoDB COMMENT='支付退款结算流水表';
 
--- 10. 评价表（与订单 1:1）
+-- 10. 评价表（同一订单可由买卖双方各评价一次）
 CREATE TABLE t_evaluation (
   evaluation_id BIGINT       NOT NULL AUTO_INCREMENT COMMENT '评价ID',
   order_id      BIGINT       NOT NULL COMMENT '订单ID',
@@ -173,7 +181,7 @@ CREATE TABLE t_evaluation (
   tags          VARCHAR(100)          DEFAULT NULL COMMENT '评价标签',
   created_at    DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (evaluation_id),
-  UNIQUE KEY uk_eval_order (order_id),
+  UNIQUE KEY uk_eval_order_evaluator (order_id, evaluator_id),
   CONSTRAINT fk_eval_order FOREIGN KEY (order_id) REFERENCES t_order (order_id),
   CONSTRAINT chk_eval_score CHECK (score BETWEEN 1 AND 5)
 ) ENGINE=InnoDB COMMENT='评价表';

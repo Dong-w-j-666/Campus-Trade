@@ -9,10 +9,10 @@
 | 实验成果 | 主要内容 |
 |---|---|
 | 实验一 项目选题与任务分解 | 项目范围、8 人分工、10 个模块、29 项任务与进度计划 |
-| 实验二 需求分析 | REQ-01 至 REQ-16、用例模型、E-R 模型和分层数据流图 |
+| 实验二 需求分析 | REQ-01 至 REQ-16、用例模型、Chen E-R 图、分层数据流图和逐条需求落点核对 |
 | 实验三 软件设计 | 分层架构、模块接口、订单状态机、13 张表及设计追踪 |
 | 实验三 软件测试 | 10 个模块 × 5 个用例，首轮 40/50、回归 50/50 |
-| MySQL 数据库实验 | 建表、示例数据、5 项结构、联查和事务校验 |
+| MySQL 数据库实验 | 建表、示例数据、支付退款结算字段、7 项结构、联查和事务校验 |
 
 ## 技术环境
 
@@ -78,7 +78,7 @@ mysql -u root -p < db/schema.sql
 mysql -u root -p < db/data.sql
 ```
 
-`schema.sql` 会重建 `campus_trade` 中的 13 张表，只应在实验数据库执行。
+`schema.sql` 会重建 `campus_trade` 中的 13 张表，只应在实验数据库执行。`t_payment` 同时保留支付、退款和卖家结算字段；`t_evaluation` 使用 `(order_id, evaluator_id)` 唯一键，支持买卖双方各评价一次。
 
 4. 编译并运行数据库校验：
 
@@ -91,7 +91,7 @@ java -cp "out/production/Campus-Trade:lib/mysql-connector-j-8.0.31.jar" \
   DatabaseSmokeTest
 ```
 
-预期通过表数量、外键、示例数据、商品联查和事务回滚共 5 项检查。详细步骤见 [数据库说明](db/README.md)。
+预期通过表数量、外键、资金字段、双方评价唯一键、示例数据、商品联查和事务回滚共 7 项检查。详细步骤见 [数据库说明](db/README.md)。
 
 ## 实验报告
 
@@ -103,7 +103,7 @@ java -cp "out/production/Campus-Trade:lib/mysql-connector-j-8.0.31.jar" \
 ## 当前限制
 
 - `CampusMarketTest` 验证核心规则、状态和缺陷回归，不等于真实 HTTP 接口、浏览器页面或数据库事务测试。
-- MySQL 脚本和 `DatabaseSmokeTest` 已覆盖数据库结构、联查及基础事务，但完整前后端联调尚未完成。
+- MySQL 脚本和 `DatabaseSmokeTest` 已覆盖数据库结构、联查及基础事务，支付与结算目前是沙箱和数据库设计，不接入真实资金。
 - 并发下单、重复支付、权限缓存和 200 并发性能目标仍需在完整平台中继续验证。
 
 ## 提交与推送

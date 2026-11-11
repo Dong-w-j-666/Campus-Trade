@@ -82,10 +82,12 @@ java -cp "out/production/Campus-Trade:lib/mysql-connector-j-8.0.31.jar" \
 ```text
 [通过] 共 13 张数据表
 [通过] 外键约束已建立（≥10 个）
+[通过] 支付退款结算字段完整
+[通过] 双方评价联合唯一键
 [通过] 示例数据已导入
 [通过] 联查返回 5 条在售商品
 [通过] 写入与回滚正常（事务可用）
-校验结果：通过 5 项，失败 0 项，数据库结构正常
+校验结果：通过 7 项，失败 0 项，数据库结构正常
 ```
 
 ## 表与设计报告的对应
@@ -97,7 +99,7 @@ java -cp "out/production/Campus-Trade:lib/mysql-connector-j-8.0.31.jar" \
 | 商品分类 | `t_category` |
 | 商品与商品图片 | `t_goods`、`t_goods_image` |
 | 订单 | `t_order` |
-| 支付流水 | `t_payment` |
+| 支付、退款与结算流水 | `t_payment` |
 | 评价 | `t_evaluation` |
 | 举报 | `t_report` |
 | 消息 | `t_message` |
@@ -105,6 +107,6 @@ java -cp "out/production/Campus-Trade:lib/mysql-connector-j-8.0.31.jar" \
 
 ## 已知限制
 
-当前 `t_evaluation.order_id` 是唯一键，因此一个订单只能保存一条评价。若后续实现买卖双方互评，需要把唯一规则调整为 `(order_id, evaluator_id)`，并补充对应接口和测试。
+`t_evaluation` 已使用 `(order_id, evaluator_id)` 唯一键，示例数据也包含买卖双方各一条评价；仍需用真实接口验证重复评价和并发提交。`t_payment` 已保留退款金额、退款状态、卖家应结金额和结算状态，但当前只是沙箱和数据库设计，不接入真实资金通道。
 
-`DatabaseSmokeTest` 只验证基础结构、示例联查和事务回滚；真实并发锁、支付回调和跨表业务流程仍需等 Spring Boot 服务实现后进行集成测试。
+`DatabaseSmokeTest` 只验证基础结构、示例联查和事务回滚；真实并发锁、支付回调、退款和跨表业务流程仍需等 Spring Boot 服务实现后进行集成测试。

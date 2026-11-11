@@ -69,15 +69,34 @@ public class DatabaseSmokeTest {
             pass += t2 ? 1 : 0;
             fail += t2 ? 0 : 1;
 
-            // 4. 示例数据
+            // 4. 支付、退款与结算字段
+            int paymentFields = queryInt(conn, "SELECT COUNT(*) FROM information_schema.columns " +
+                    "WHERE table_schema = 'campus_trade' AND table_name = 't_payment' " +
+                    "AND column_name IN ('refund_status','refund_reason','settlement_amount','settlement_status','settled_at')");
+            boolean t4 = paymentFields == 5;
+            report("支付退款结算字段完整", t4, "实际 " + paymentFields + "/5");
+            pass += t4 ? 1 : 0;
+            fail += t4 ? 0 : 1;
+
+            // 5. 双方评价联合唯一键
+            int evalKeyColumns = queryInt(conn, "SELECT COUNT(DISTINCT column_name) FROM information_schema.statistics " +
+                    "WHERE table_schema = 'campus_trade' AND table_name = 't_evaluation' " +
+                    "AND index_name = 'uk_eval_order_evaluator' AND non_unique = 0 " +
+                    "AND column_name IN ('order_id','evaluator_id')");
+            boolean t5 = evalKeyColumns == 2;
+            report("双方评价联合唯一键", t5, "实际覆盖 " + evalKeyColumns + "/2 列");
+            pass += t5 ? 1 : 0;
+            fail += t5 ? 0 : 1;
+
+            // 6. 示例数据
             int users = queryInt(conn, "SELECT COUNT(*) FROM t_user");
             int goods = queryInt(conn, "SELECT COUNT(*) FROM t_goods");
-            boolean t3 = users >= 5 && goods >= 6;
-            report("示例数据已导入", t3, "用户 " + users + " 条，商品 " + goods + " 条");
-            pass += t3 ? 1 : 0;
-            fail += t3 ? 0 : 1;
+            boolean t6 = users >= 5 && goods >= 6;
+            report("示例数据已导入", t6, "用户 " + users + " 条，商品 " + goods + " 条");
+            pass += t6 ? 1 : 0;
+            fail += t6 ? 0 : 1;
 
-            // 5. 多表联查
+            // 7. 多表联查
             String sql = "SELECT g.goods_id, g.title, g.price, c.category_name, u.real_name " +
                     "FROM t_goods g JOIN t_category c ON g.category_id = c.category_id " +
                     "JOIN t_user u ON g.seller_id = u.user_id WHERE g.status = 'ON_SALE' ORDER BY g.goods_id";
@@ -91,14 +110,14 @@ public class DatabaseSmokeTest {
                             rs.getLong(1), rs.getString(2), rs.getDouble(3), rs.getString(4), rs.getString(5));
                 }
             }
-            boolean t4 = rows == 5;
-            report("联查返回 5 条在售商品", t4, "实际 " + rows + " 条");
-            pass += t4 ? 1 : 0;
-            fail += t4 ? 0 : 1;
+            boolean t7 = rows == 5;
+            report("联查返回 5 条在售商品", t7, "实际 " + rows + " 条");
+            pass += t7 ? 1 : 0;
+            fail += t7 ? 0 : 1;
 
-            // 6. 写入回滚测试（不污染数据）
+            // 8. 写入回滚测试（不污染数据）
             conn.setAutoCommit(false);
-            boolean t5;
+            boolean t8;
             try (PreparedStatement ps = conn.prepareStatement(
                     "INSERT INTO t_message (sender_id, receiver_id, msg_type, content) VALUES (?, ?, 'SYSTEM', ?)")) {
                 ps.setLong(1, 1);
@@ -106,16 +125,16 @@ public class DatabaseSmokeTest {
                 ps.setString(3, "冒烟测试消息");
                 ps.executeUpdate();
                 int inserted = queryInt(conn, "SELECT COUNT(*) FROM t_message WHERE content = '冒烟测试消息'");
-                t5 = inserted == 1;
+                t8 = inserted == 1;
                 conn.rollback();
             } catch (Exception e) {
                 conn.rollback();
-                t5 = false;
+                t8 = false;
             }
             conn.setAutoCommit(true);
-            report("写入与回滚正常（事务可用）", t5, t5 ? "已回滚，数据未残留" : "写入或回滚失败");
-            pass += t5 ? 1 : 0;
-            fail += t5 ? 0 : 1;
+            report("写入与回滚正常（事务可用）", t8, t8 ? "已回滚，数据未残留" : "写入或回滚失败");
+            pass += t8 ? 1 : 0;
+            fail += t8 ? 0 : 1;
 
         } catch (Exception e) {
             System.out.println("连接失败：" + e.getMessage());
