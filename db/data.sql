@@ -9,6 +9,7 @@ SET FOREIGN_KEY_CHECKS = 0;
 TRUNCATE TABLE t_operation_log;
 TRUNCATE TABLE t_message;
 TRUNCATE TABLE t_report;
+TRUNCATE TABLE t_evaluation_tag;
 TRUNCATE TABLE t_evaluation;
 TRUNCATE TABLE t_payment;
 TRUNCATE TABLE t_order;
@@ -21,6 +22,13 @@ TRUNCATE TABLE t_role;
 TRUNCATE TABLE t_user;
 SET FOREIGN_KEY_CHECKS = 1;
 
+-- 角色与权限
+INSERT INTO t_role (role_id, role_code, role_name, description) VALUES
+(1, 'ADMIN',  '平台管理员', '拥有全部权限'),
+(2, 'AUDITOR','内容审核员', '审核商品与举报'),
+(3, 'SELLER', '卖家',       '发布与管理商品'),
+(4, 'BUYER',  '买家',       '浏览、下单与评价');
+
 -- 用户：1 管理员 + 2 卖家 + 2 买家
 INSERT INTO t_user (user_id, student_no, real_name, phone, password_hash, credit_score, role_code, status, certified, campus) VALUES
 (1, '20240001', '董文杰', '13800000001', 'demo-hash-1', 88.00, 'ADMIN',  'ACTIVE', 1, '主校区'),
@@ -28,13 +36,6 @@ INSERT INTO t_user (user_id, student_no, real_name, phone, password_hash, credit
 (3, '20240003', '王雪',   '13800000003', 'demo-hash-3', 85.00, 'SELLER', 'ACTIVE', 1, '东校区'),
 (4, '20240004', '陈浩',   '13800000004', 'demo-hash-4', 80.00, 'BUYER',  'ACTIVE', 1, '主校区'),
 (5, '20240005', '刘佳',   '13800000005', 'demo-hash-5', 78.00, 'BUYER',  'PENDING', 0, '东校区');
-
--- 角色与权限
-INSERT INTO t_role (role_id, role_code, role_name, description) VALUES
-(1, 'ADMIN',  '平台管理员', '拥有全部权限'),
-(2, 'AUDITOR','内容审核员', '审核商品与举报'),
-(3, 'SELLER', '卖家',       '发布与管理商品'),
-(4, 'BUYER',  '买家',       '浏览、下单与评价');
 
 INSERT INTO t_permission (permission_id, perm_code, perm_name, perm_type) VALUES
 (1, 'goods:audit',    '审核商品',   'BUTTON'),
@@ -75,9 +76,9 @@ INSERT INTO t_goods_image (goods_id, image_url, sort_no) VALUES
 (104, '/images/goods/104-1.jpg', 1);
 
 -- 订单：一笔已完成、一笔待付款
-INSERT INTO t_order (order_id, order_no, goods_id, buyer_id, seller_id, amount, status, trade_campus, paid_at, finished_at) VALUES
-(1001, 'CT202610150001', 101, 4, 2, 25.00,  'FINISHED', '主校区', '2026-10-15 10:05:00', '2026-10-15 18:00:00'),
-(1002, 'CT202610160002', 102, 5, 2, 120.00, 'UNPAID',   '主校区', NULL, NULL);
+INSERT INTO t_order (order_id, order_no, goods_id, buyer_id, amount, status, trade_campus, paid_at, finished_at) VALUES
+(1001, 'CT202610150001', 101, 4, 25.00,  'FINISHED', '主校区', '2026-10-15 10:05:00', '2026-10-15 18:00:00'),
+(1002, 'CT202610160002', 102, 5, 120.00, 'UNPAID',   '主校区', NULL, NULL);
 
 INSERT INTO t_payment (
   trade_no, order_id, amount, pay_method, status, refund_amount, refund_status,
@@ -86,9 +87,15 @@ INSERT INTO t_payment (
 ('SB202610150001', 1001, 25.00, 'SANDBOX', 'SUCCESS', 0.00, 'NONE',
  24.50, 'SETTLED', '2026-10-15 10:05:00', NULL, '2026-10-15 18:00:10');
 
-INSERT INTO t_evaluation (order_id, evaluator_id, target_id, score, content, tags) VALUES
-(1001, 4, 2, 5, '书很新，人也很好，约在主楼交易很顺利', '描述相符,交易爽快'),
-(1001, 2, 4, 5, '买家准时到场，交易顺利', '守约,沟通顺畅');
+INSERT INTO t_evaluation (evaluation_id, order_id, evaluator_id, target_id, score, content) VALUES
+(1, 1001, 4, 2, 5, '书很新，人也很好，约在主楼交易很顺利'),
+(2, 1001, 2, 4, 5, '买家准时到场，交易顺利');
+
+INSERT INTO t_evaluation_tag (evaluation_id, tag_name) VALUES
+(1, '描述相符'),
+(1, '交易爽快'),
+(2, '守约'),
+(2, '沟通顺畅');
 
 INSERT INTO t_report (goods_id, reporter_id, report_type, evidence, status, priority) VALUES
 (105, 4, '违禁品', '商品描述与实物不符', 'REJECTED', 1);

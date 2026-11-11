@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Properties;
 
 /**
- * 数据库连通性与结构校验（实验三 数据库结构设计配套）。
+ * 数据库连通性与结构校验（实验三、实验五数据库结构设计配套）。
  *
  * 先启动 MySQL 并执行 db/schema.sql、db/data.sql，再运行本程序。
  *
@@ -50,8 +50,8 @@ public class DatabaseSmokeTest {
             // 1. 表数量
             int tables = queryInt(conn, "SELECT COUNT(*) FROM information_schema.tables " +
                     "WHERE table_schema = 'campus_trade' AND table_type = 'BASE TABLE'");
-            boolean t1 = tables == 13;
-            report("共 13 张数据表", t1, "实际 " + tables + " 张");
+            boolean t1 = tables == 14;
+            report("共 14 张数据表", t1, "实际 " + tables + " 张");
             pass += t1 ? 1 : 0;
             fail += t1 ? 0 : 1;
 

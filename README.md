@@ -1,6 +1,6 @@
 # Campus-Trade 校园二手交易平台课程实验
 
-本仓库是“2024 级网络工程第 2 组”软件工程实验的阶段成果，包含实验一至实验三的四份报告、十模块核心业务测试程序、MySQL 建表与示例数据，以及数据库结构和事务校验程序。
+本仓库是“2024 级网络工程第 2 组”软件工程实验的阶段成果，包含实验一至实验五的五份报告、十模块核心业务测试程序、MySQL 建表与示例数据，以及数据库结构和事务校验程序。
 
 规划中的完整平台采用 Vue 3、Spring Boot 和 MySQL。当前仓库还没有实现 Vue 前端、Spring Boot 服务或完整的 Web 交易流程；现有 Java 程序是独立运行的实验验证代码。
 
@@ -10,9 +10,10 @@
 |---|---|
 | 实验一 项目选题与任务分解 | 项目范围、8 人分工、10 个模块、29 项任务与进度计划 |
 | 实验二 需求分析 | REQ-01 至 REQ-16、用例模型、Chen E-R 图、分层数据流图和逐条需求落点核对 |
-| 实验三 软件设计 | 分层架构、模块接口、订单状态机、13 张表及设计追踪 |
+| 实验三 软件设计 | 分层架构、模块接口、订单状态机、14 张表及设计追踪 |
 | 实验三 软件测试 | 10 个模块 × 5 个用例，首轮 40/50、回归 50/50 |
 | MySQL 数据库实验 | 建表、示例数据、支付退款结算字段、7 项结构、联查和事务校验 |
+| 实验五 数据库结构设计 | E-R 转关系模式、14 张表、1NF/2NF/3NF 检查、21 个外键和 MySQL 实测 |
 
 ## 技术环境
 
@@ -33,11 +34,11 @@ Campus-Trade/
 │   ├── CampusMarketTest.java     # 10 模块 × 5 用例的核心业务测试
 │   └── DatabaseSmokeTest.java    # MySQL 结构、联查和事务校验
 ├── db/
-│   ├── schema.sql                # 13 张业务表及约束
+│   ├── schema.sql                # 14 张业务表及约束
 │   ├── data.sql                  # 用户、商品、订单等示例数据
 │   ├── db.properties.example     # 数据库连接配置模板
 │   └── README.md                 # MySQL 实验操作说明
-├── docs/                         # 实验一至实验三四份 DOCX 报告
+├── docs/                         # 实验一至实验三五份 DOCX 报告
 ├── lib/                          # MySQL JDBC 驱动
 └── .idea/                        # IntelliJ IDEA 工程配置
 ```
@@ -78,7 +79,7 @@ mysql -u root -p < db/schema.sql
 mysql -u root -p < db/data.sql
 ```
 
-`schema.sql` 会重建 `campus_trade` 中的 13 张表，只应在实验数据库执行。`t_payment` 同时保留支付、退款和卖家结算字段；`t_evaluation` 使用 `(order_id, evaluator_id)` 唯一键，支持买卖双方各评价一次。
+`schema.sql` 会重建 `campus_trade` 中的 14 张表，只应在实验数据库执行。`t_payment` 同时保留支付、退款和卖家结算字段；`t_evaluation` 使用 `(order_id, evaluator_id)` 唯一键，支持买卖双方各评价一次；`t_evaluation_tag` 把评价标签拆成原子记录。订单表不重复保存卖家，查询时通过 `t_order.goods_id → t_goods.seller_id` 关联。
 
 4. 编译并运行数据库校验：
 
@@ -95,10 +96,11 @@ java -cp "out/production/Campus-Trade:lib/mysql-connector-j-8.0.31.jar" \
 
 ## 实验报告
 
-- [实验一 项目选题与任务分解](<docs/实验一 项目选题与任务分解（8人版）.docx>)
+- [实验一 项目选题与任务分解](<docs/实验一 项目选题与任务分解.docx>)
 - [实验二 需求分析](<docs/实验二 需求分析实验报告.docx>)
 - [实验三 软件设计](<docs/实验三 软件设计实验报告.docx>)
 - [实验三 软件测试](<docs/实验三 软件测试实验报告.docx>)
+- [实验五 数据库结构设计](<docs/实验五 数据库结构设计实验报告.docx>)
 
 ## 当前限制
 

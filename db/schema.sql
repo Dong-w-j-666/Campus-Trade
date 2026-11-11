@@ -1,6 +1,6 @@
 -- ============================================================
 -- 校园二手交易平台 数据库建表脚本
--- 对应《实验三 软件设计实验报告》表 2-1，共 13 张表
+-- 对应《实验五 数据库结构设计实验报告》，共 14 张表
 -- 适用：MySQL 8.0 / 9.x，字符集 utf8mb4
 -- ============================================================
 
@@ -14,6 +14,7 @@ SET FOREIGN_KEY_CHECKS = 0;
 DROP TABLE IF EXISTS t_operation_log;
 DROP TABLE IF EXISTS t_message;
 DROP TABLE IF EXISTS t_report;
+DROP TABLE IF EXISTS t_evaluation_tag;
 DROP TABLE IF EXISTS t_evaluation;
 DROP TABLE IF EXISTS t_payment;
 DROP TABLE IF EXISTS t_order;
@@ -56,6 +57,11 @@ CREATE TABLE t_role (
   PRIMARY KEY (role_id),
   UNIQUE KEY uk_role_code (role_code)
 ) ENGINE=InnoDB COMMENT='角色表';
+
+ALTER TABLE t_user
+  ADD CONSTRAINT fk_user_role
+  FOREIGN KEY (role_code) REFERENCES t_role (role_code)
+  ON UPDATE CASCADE;
 
 -- 3. 权限表
 CREATE TABLE t_permission (
@@ -119,6 +125,7 @@ CREATE TABLE t_goods_image (
   image_url VARCHAR(255) NOT NULL COMMENT '图片地址',
   sort_no   INT          NOT NULL DEFAULT 1 COMMENT '显示顺序 1-9',
   PRIMARY KEY (image_id),
+  UNIQUE KEY uk_image_goods_sort (goods_id, sort_no),
   KEY idx_image_goods (goods_id),
   CONSTRAINT fk_image_goods FOREIGN KEY (goods_id) REFERENCES t_goods (goods_id) ON DELETE CASCADE
 ) ENGINE=InnoDB COMMENT='商品图片表';
@@ -129,7 +136,6 @@ CREATE TABLE t_order (
   order_no     VARCHAR(32)   NOT NULL COMMENT '订单号',
   goods_id     BIGINT        NOT NULL COMMENT '商品ID',
   buyer_id     BIGINT        NOT NULL COMMENT '买家ID',
-  seller_id    BIGINT        NOT NULL COMMENT '卖家ID',
   amount       DECIMAL(10,2) NOT NULL COMMENT '订单金额',
   status       VARCHAR(20)   NOT NULL DEFAULT 'UNPAID' COMMENT 'UNPAID/PAID/SHIPPED/FINISHED/CANCELLED',
   trade_campus VARCHAR(50)            DEFAULT NULL COMMENT '交易校区',
@@ -142,8 +148,7 @@ CREATE TABLE t_order (
   KEY idx_order_buyer (buyer_id, status),
   KEY idx_order_goods (goods_id),
   CONSTRAINT fk_order_goods FOREIGN KEY (goods_id) REFERENCES t_goods (goods_id),
-  CONSTRAINT fk_order_buyer FOREIGN KEY (buyer_id) REFERENCES t_user (user_id),
-  CONSTRAINT fk_order_seller FOREIGN KEY (seller_id) REFERENCES t_user (user_id)
+  CONSTRAINT fk_order_buyer FOREIGN KEY (buyer_id) REFERENCES t_user (user_id)
 ) ENGINE=InnoDB COMMENT='订单表';
 
 -- 9. 支付、退款与结算流水表（与订单 1:1）
@@ -178,15 +183,25 @@ CREATE TABLE t_evaluation (
   target_id     BIGINT       NOT NULL COMMENT '被评价人ID',
   score         TINYINT      NOT NULL COMMENT '评分 1-5',
   content       VARCHAR(500)          DEFAULT NULL COMMENT '评价内容',
-  tags          VARCHAR(100)          DEFAULT NULL COMMENT '评价标签',
   created_at    DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (evaluation_id),
   UNIQUE KEY uk_eval_order_evaluator (order_id, evaluator_id),
   CONSTRAINT fk_eval_order FOREIGN KEY (order_id) REFERENCES t_order (order_id),
+  CONSTRAINT fk_eval_evaluator FOREIGN KEY (evaluator_id) REFERENCES t_user (user_id),
+  CONSTRAINT fk_eval_target FOREIGN KEY (target_id) REFERENCES t_user (user_id),
   CONSTRAINT chk_eval_score CHECK (score BETWEEN 1 AND 5)
 ) ENGINE=InnoDB COMMENT='评价表';
 
--- 11. 举报表
+-- 11. 评价标签表（评价标签为多值属性，拆表满足第一范式）
+CREATE TABLE t_evaluation_tag (
+  evaluation_id BIGINT      NOT NULL COMMENT '评价ID',
+  tag_name       VARCHAR(30) NOT NULL COMMENT '评价标签',
+  PRIMARY KEY (evaluation_id, tag_name),
+  CONSTRAINT fk_eval_tag_evaluation
+    FOREIGN KEY (evaluation_id) REFERENCES t_evaluation (evaluation_id) ON DELETE CASCADE
+) ENGINE=InnoDB COMMENT='评价标签表';
+
+-- 12. 举报表
 CREATE TABLE t_report (
   report_id   BIGINT       NOT NULL AUTO_INCREMENT COMMENT '举报ID',
   goods_id    BIGINT       NOT NULL COMMENT '被举报商品ID',
@@ -202,10 +217,11 @@ CREATE TABLE t_report (
   KEY idx_report_goods (goods_id),
   KEY idx_report_status (status, priority),
   CONSTRAINT fk_report_goods FOREIGN KEY (goods_id) REFERENCES t_goods (goods_id),
-  CONSTRAINT fk_report_user FOREIGN KEY (reporter_id) REFERENCES t_user (user_id)
+  CONSTRAINT fk_report_user FOREIGN KEY (reporter_id) REFERENCES t_user (user_id),
+  CONSTRAINT fk_report_handler FOREIGN KEY (handled_by) REFERENCES t_user (user_id) ON DELETE SET NULL
 ) ENGINE=InnoDB COMMENT='举报表';
 
--- 12. 消息表
+-- 13. 消息表
 CREATE TABLE t_message (
   message_id  BIGINT       NOT NULL AUTO_INCREMENT COMMENT '消息ID',
   sender_id   BIGINT       NOT NULL COMMENT '发送者ID',
@@ -218,10 +234,11 @@ CREATE TABLE t_message (
   PRIMARY KEY (message_id),
   KEY idx_msg_receiver (receiver_id, is_read),
   CONSTRAINT fk_msg_sender FOREIGN KEY (sender_id) REFERENCES t_user (user_id),
-  CONSTRAINT fk_msg_receiver FOREIGN KEY (receiver_id) REFERENCES t_user (user_id)
+  CONSTRAINT fk_msg_receiver FOREIGN KEY (receiver_id) REFERENCES t_user (user_id),
+  CONSTRAINT fk_msg_order FOREIGN KEY (order_id) REFERENCES t_order (order_id) ON DELETE SET NULL
 ) ENGINE=InnoDB COMMENT='消息表';
 
--- 13. 操作日志表
+-- 14. 操作日志表
 CREATE TABLE t_operation_log (
   log_id      BIGINT       NOT NULL AUTO_INCREMENT COMMENT '日志ID',
   operator_id BIGINT                DEFAULT NULL COMMENT '操作人ID',
@@ -233,5 +250,6 @@ CREATE TABLE t_operation_log (
   created_at  DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (log_id),
   KEY idx_log_operator (operator_id),
-  KEY idx_log_time (created_at)
+  KEY idx_log_time (created_at),
+  CONSTRAINT fk_log_operator FOREIGN KEY (operator_id) REFERENCES t_user (user_id) ON DELETE SET NULL
 ) ENGINE=InnoDB COMMENT='操作日志表';
