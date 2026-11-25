@@ -190,6 +190,8 @@ java -cp out/production/Campus-Trade Experiment8Test
 - [实验三 软件测试](<docs/实验三 软件测试实验报告.docx>)
 - [实验五 数据库结构设计](<docs/实验五 数据库结构设计实验报告.docx>)
 - [实验八 软件测试](<docs/实验八 软件测试实验报告.docx>)
+- [实验八 八人个人测试报告](<docs/实验八 八人个人测试报告/>)
+- [实验八 八人个人测试报告压缩包](<docs/实验八 八人个人测试报告.zip>)
 
 ## 仓库结构
 
