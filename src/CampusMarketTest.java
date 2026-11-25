@@ -18,7 +18,7 @@ import java.util.function.Supplier;
  * 覆盖软件测试报告中的 10 个模块、50 个测试用例。
  *
  * 用法：
- *   javac -encoding UTF-8 CampusMarketTest.java
+ *   javac -encoding UTF-8 --release 21 CampusMarketTest.java
  *   java CampusMarketTest             # 修复后回归，预期 50/50 通过
  *   java CampusMarketTest --legacy    # 复现首轮的 10 个缺陷，预期 40/50 通过
  */

@@ -89,6 +89,9 @@ mysql -u root -p < db/data.sql
 6. 启动后访问 `http://localhost:8080`。
 
 原有的 `CampusMarketTest` 与 `Experiment8Test` IDEA 运行配置仍保留，不受 Web 应用运行配置影响。
+仓库已把根模块的字节码目标固定为 Java 21。若 IDEA 里仍提示
+`UnsupportedClassVersionError`，先执行 **Build → Rebuild Project**，清除之前用更高版本 JDK
+生成的 `out/production/Campus-Trade` 缓存后再运行。
 
 ## 前端开发
 
@@ -174,7 +177,7 @@ APP_HOST_PORT=18080 MYSQL_HOST_PORT=13307 docker compose up --build
 ### 数据库结构校验
 
 ```bash
-javac -encoding UTF-8 -d out/production/Campus-Trade \
+javac -encoding UTF-8 --release 21 -d out/production/Campus-Trade \
   -cp lib/mysql-connector-j-8.0.31.jar \
   src/DatabaseSmokeTest.java
 
@@ -185,7 +188,7 @@ java -cp "out/production/Campus-Trade:lib/mysql-connector-j-8.0.31.jar" \
 ### 核心业务回归
 
 ```bash
-javac -encoding UTF-8 -d out/production/Campus-Trade \
+javac -encoding UTF-8 --release 21 -d out/production/Campus-Trade \
   src/CampusMarketTest.java
 
 java -cp out/production/Campus-Trade CampusMarketTest
@@ -195,11 +198,26 @@ java -cp out/production/Campus-Trade CampusMarketTest --legacy
 ### 实验八测试
 
 ```bash
-javac -encoding UTF-8 -d out/production/Campus-Trade \
+javac -encoding UTF-8 --release 21 -d out/production/Campus-Trade \
   src/CampusMarketTest.java src/Experiment8Test.java
 
 java -cp out/production/Campus-Trade Experiment8Test
 ```
+
+也可以一次完成编译、回归和实验八测试：
+
+```bash
+./scripts/run-tests.sh
+```
+
+MySQL 已启动并完成建库后，追加 `--with-db` 运行数据库结构校验：
+
+```bash
+./scripts/run-tests.sh --with-db
+```
+
+测试程序只依赖根目录 `out/` 编译产物；`--release 21` 确保即使使用 JDK 24 编译，
+也不会生成只有 JDK 24 才能运行的 class 文件。
 
 ### 实验报告
 

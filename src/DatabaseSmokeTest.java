@@ -17,6 +17,8 @@ import java.util.Properties;
  * 先启动 MySQL 并执行 db/schema.sql、db/data.sql，再运行本程序。
  *
  * 用法：
+ *   javac -encoding UTF-8 --release 21 -d out/production/Campus-Trade \
+ *       -cp lib/mysql-connector-j-8.0.31.jar src/DatabaseSmokeTest.java
  *   java -cp "out/production/Campus-Trade:lib/mysql-connector-j-8.0.31.jar" DatabaseSmokeTest
  *   java -cp "out/production/Campus-Trade:lib/mysql-connector-j-8.0.31.jar" DatabaseSmokeTest <url> <user> <password>
  */

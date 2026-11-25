@@ -15,7 +15,7 @@ import java.util.function.Supplier;
  * 白盒逻辑覆盖测试。程序复用 CampusMarketTest 中的内存业务夹具。
  *
  * 用法：
- *   javac -encoding UTF-8 -d out/production/Campus-Trade \
+ *   javac -encoding UTF-8 --release 21 -d out/production/Campus-Trade \
  *       src/CampusMarketTest.java src/Experiment8Test.java
  *   java -cp out/production/Campus-Trade Experiment8Test
  */

@@ -52,7 +52,7 @@ mysql -u root -p < db/data.sql
 在仓库根目录编译：
 
 ```bash
-javac -encoding UTF-8 -d out/production/Campus-Trade \
+javac -encoding UTF-8 --release 21 -d out/production/Campus-Trade \
   -cp lib/mysql-connector-j-8.0.31.jar \
   src/DatabaseSmokeTest.java
 ```
