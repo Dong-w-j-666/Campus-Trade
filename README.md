@@ -120,7 +120,13 @@ docker compose up --build
 默认开放：
 
 - Web 应用：`http://localhost:8080`
-- MySQL：`localhost:3306`
+- MySQL：`localhost:13306`
+
+如果端口已被其他程序占用，可以在启动前覆盖宿主机端口：
+
+```bash
+APP_HOST_PORT=18080 MYSQL_HOST_PORT=13307 docker compose up --build
+```
 
 `docker-compose.yml` 中的密码和 `APP_AUTH_SECRET` 仅用于本地演示，正式部署前必须替换。
 

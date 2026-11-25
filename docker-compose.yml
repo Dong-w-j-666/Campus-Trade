@@ -6,7 +6,7 @@ services:
       MYSQL_DATABASE: campus_trade
       TZ: Asia/Shanghai
     ports:
-      - "3306:3306"
+      - "${MYSQL_HOST_PORT:-13306}:3306"
     volumes:
       - campus_trade_mysql:/var/lib/mysql
       - ./db/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
@@ -28,7 +28,7 @@ services:
       DB_PASSWORD: campus_root_dev
       APP_AUTH_SECRET: change-this-secret-before-production
     ports:
-      - "8080:8080"
+      - "${APP_HOST_PORT:-8080}:8080"
     volumes:
       - campus_trade_uploads:/app/uploads
 
