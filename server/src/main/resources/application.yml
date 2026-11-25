@@ -1,0 +1,37 @@
+server:
+  port: ${SERVER_PORT:8080}
+  compression:
+    enabled: true
+    mime-types: application/json,text/html,text/css,application/javascript
+
+spring:
+  application:
+    name: campus-trade
+  datasource:
+    url: "${DB_URL:jdbc:mysql://127.0.0.1:3306/campus_trade?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai&characterEncoding=utf8}"
+    username: "${DB_USERNAME:root}"
+    password: "${DB_PASSWORD:}"
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 2
+      connection-timeout: 5000
+  jackson:
+    time-zone: Asia/Shanghai
+    serialization:
+      write-dates-as-timestamps: false
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 12MB
+
+app:
+  auth:
+    secret: "${APP_AUTH_SECRET:campus-trade-local-development-secret-change-before-deploying}"
+    secure-cookie: "${APP_SECURE_COOKIE:false}"
+    token-hours: 168
+  upload-dir: "${UPLOAD_DIR:./uploads}"
+
+logging:
+  level:
+    root: INFO
+    com.campustrade: INFO

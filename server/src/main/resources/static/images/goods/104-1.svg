@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 720">
+  <rect width="800" height="720" fill="#d9d4c5"/>
+  <circle cx="674" cy="76" r="210" fill="#ef7354" opacity=".8"/>
+  <path d="M-80 580c170-80 300-77 446 16s297 87 520-40v164H-80z" fill="#1f6a48"/>
+  <g transform="rotate(7 400 360)">
+    <rect x="175" y="78" width="450" height="574" rx="34" fill="#1f2b25"/>
+    <rect x="192" y="96" width="416" height="538" rx="22" fill="#e8e8df"/>
+    <rect x="222" y="128" width="356" height="450" rx="12" fill="#c3d9d1"/>
+    <circle cx="284" cy="207" r="42" fill="#dbea4e"/>
+    <path d="M222 480c70-120 150-170 246-90 42 35 75 43 110 25v163H222z" fill="#5e8c70"/>
+    <path d="M222 507c75-80 154-105 237-75 43 16 82 13 119-8v160H222z" fill="#2d6a4c"/>
+    <circle cx="400" cy="608" r="8" fill="#69716b"/>
+    <rect x="350" y="545" width="100" height="19" rx="10" fill="#dbea4e"/>
+  </g>
+  <text x="48" y="62" fill="#17251d" font-family="sans-serif" font-size="13" font-weight="700" letter-spacing="4">IPAD / 9TH GEN</text>
+</svg>

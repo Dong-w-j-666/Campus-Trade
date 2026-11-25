@@ -30,12 +30,13 @@ INSERT INTO t_role (role_id, role_code, role_name, description) VALUES
 (4, 'BUYER',  '买家',       '浏览、下单与评价');
 
 -- 用户：1 管理员 + 2 卖家 + 2 买家
+-- 演示账号密码统一为 Campus@123（BCrypt 哈希）
 INSERT INTO t_user (user_id, student_no, real_name, phone, password_hash, credit_score, role_code, status, certified, campus) VALUES
-(1, '20240001', '董文杰', '13800000001', 'demo-hash-1', 88.00, 'ADMIN',  'ACTIVE', 1, '主校区'),
-(2, '20240002', '李晓明', '13800000002', 'demo-hash-2', 92.00, 'SELLER', 'ACTIVE', 1, '主校区'),
-(3, '20240003', '王雪',   '13800000003', 'demo-hash-3', 85.00, 'SELLER', 'ACTIVE', 1, '东校区'),
-(4, '20240004', '陈浩',   '13800000004', 'demo-hash-4', 80.00, 'BUYER',  'ACTIVE', 1, '主校区'),
-(5, '20240005', '刘佳',   '13800000005', 'demo-hash-5', 78.00, 'BUYER',  'PENDING', 0, '东校区');
+(1, '20240001', '董文杰', '13800000001', '$2y$10$QcQXFtn6fZ8S5Ka5C1UIRunZv2MxyIG7B3Ubs64zwZDZ9TLH8U5KG', 88.00, 'ADMIN',  'ACTIVE', 1, '主校区'),
+(2, '20240002', '李晓明', '13800000002', '$2y$10$QcQXFtn6fZ8S5Ka5C1UIRunZv2MxyIG7B3Ubs64zwZDZ9TLH8U5KG', 92.00, 'SELLER', 'ACTIVE', 1, '主校区'),
+(3, '20240003', '王雪',   '13800000003', '$2y$10$QcQXFtn6fZ8S5Ka5C1UIRunZv2MxyIG7B3Ubs64zwZDZ9TLH8U5KG', 85.00, 'SELLER', 'ACTIVE', 1, '东校区'),
+(4, '20240004', '陈浩',   '13800000004', '$2y$10$QcQXFtn6fZ8S5Ka5C1UIRunZv2MxyIG7B3Ubs64zwZDZ9TLH8U5KG', 80.00, 'BUYER',  'ACTIVE', 1, '主校区'),
+(5, '20240005', '刘佳',   '13800000005', '$2y$10$QcQXFtn6fZ8S5Ka5C1UIRunZv2MxyIG7B3Ubs64zwZDZ9TLH8U5KG', 78.00, 'BUYER',  'PENDING', 0, '东校区');
 
 INSERT INTO t_permission (permission_id, perm_code, perm_name, perm_type) VALUES
 (1, 'goods:audit',    '审核商品',   'BUTTON'),
@@ -62,18 +63,22 @@ INSERT INTO t_category (category_id, parent_id, category_name, sort_no, status) 
 
 -- 商品
 INSERT INTO t_goods (goods_id, title, description, price, condition_level, category_id, seller_id, campus, status, view_count) VALUES
-(101, '高等数学第七版 上册', '无笔记，九成新，考研可用', 25.00, '九成新', 1, 2, '主校区', 'ON_SALE', 36),
-(102, '罗技蓝牙键盘 K380',   '使用半年，功能正常，含包装', 120.00, '八成新', 2, 2, '主校区', 'ON_SALE', 58),
+(101, '高等数学第七版 上册', '无笔记，九成新，考研可用', 25.00, '九成新', 1, 2, '主校区', 'SOLD', 36),
+(102, '罗技蓝牙键盘 K380',   '使用半年，功能正常，含包装', 120.00, '八成新', 2, 2, '主校区', 'LOCKED', 58),
 (103, '宿舍折叠桌',           '桌面无划痕，可自提',         45.00, '九成新', 3, 3, '东校区', 'ON_SALE', 12),
 (104, 'iPad 第九代 64G',      '送保护壳，电池健康 92%',     1500.00,'九五新', 5, 3, '东校区', 'ON_SALE', 210),
 (105, '羽毛球拍一对',         '闲置，适合入门',             60.00, '八成新', 4, 2, '主校区', 'OFF_SHELF', 8),
-(106, '大学英语四级真题',     '只写过两套',                 10.00, '九成新', 1, 3, '东校区', 'ON_SALE', 21);
+(106, '大学英语四级真题',     '只写过两套',                 10.00, '九成新', 1, 3, '东校区', 'ON_SALE', 21),
+(107, '富士拍立得 mini 11',   '奶白色，含腕带和两盒相纸',   320.00, '九成新', 2, 2, '主校区', 'ON_SALE', 74),
+(108, '图书馆同款护眼台灯',   '三档暖光，宿舍书桌适用',     38.00, '九五新', 3, 3, '东校区', 'ON_SALE', 19);
 
 INSERT INTO t_goods_image (goods_id, image_url, sort_no) VALUES
-(101, '/images/goods/101-1.jpg', 1),
-(101, '/images/goods/101-2.jpg', 2),
-(102, '/images/goods/102-1.jpg', 1),
-(104, '/images/goods/104-1.jpg', 1);
+(101, '/images/goods/101-1.svg', 1),
+(101, '/images/goods/101-2.svg', 2),
+(102, '/images/goods/102-1.svg', 1),
+(104, '/images/goods/104-1.svg', 1),
+(107, '/images/goods/107-1.svg', 1),
+(108, '/images/goods/108-1.svg', 1);
 
 -- 订单：一笔已完成、一笔待付款
 INSERT INTO t_order (order_id, order_no, goods_id, buyer_id, amount, status, trade_campus, paid_at, finished_at) VALUES

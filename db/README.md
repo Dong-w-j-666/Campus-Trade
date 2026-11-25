@@ -7,7 +7,7 @@
 | 文件 | 说明 |
 |---|---|
 | `db/schema.sql` | 创建 `campus_trade`、14 张表、主外键、索引和 CHECK 约束 |
-| `db/data.sql` | 导入 5 个用户、6 件商品、2 笔订单及支付、评价、举报和消息 |
+| `db/data.sql` | 导入 5 个用户、8 件商品、2 笔订单及支付、评价、举报和消息 |
 | `db/db.properties.example` | JDBC 地址、用户名和密码模板 |
 | `src/DatabaseSmokeTest.java` | JDBC 结构和事务校验 |
 | `lib/mysql-connector-j-8.0.31.jar` | MySQL JDBC 驱动 |
@@ -44,6 +44,8 @@ mysql -u root -p < db/data.sql
 `schema.sql` 会删除并重建 `campus_trade` 中的同名表。不要对包含正式数据的数据库执行该脚本。
 
 导入后应看到 14 张表，包括 `t_user`、`t_role`、`t_permission`、`t_role_permission`、`t_category`、`t_goods`、`t_goods_image`、`t_order`、`t_payment`、`t_evaluation`、`t_evaluation_tag`、`t_report`、`t_message` 和 `t_operation_log`。
+
+演示账号密码统一为 `Campus@123`。买家和卖家分别可使用 `20240004`（陈浩）与 `20240002`（李晓明）登录 Web 应用。
 
 ## 4. 运行数据库校验
 

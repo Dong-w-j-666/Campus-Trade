@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 720">
+  <rect width="800" height="720" fill="#e5dcc9"/>
+  <circle cx="90" cy="90" r="210" fill="#dbea4e" opacity=".7"/>
+  <circle cx="730" cy="690" r="260" fill="#ef7354" opacity=".42"/>
+  <g transform="rotate(5 400 360)">
+    <rect x="180" y="120" width="440" height="500" rx="25" fill="#275f45"/>
+    <rect x="203" y="143" width="394" height="454" rx="15" fill="none" stroke="#dbea4e" stroke-width="2" opacity=".5"/>
+    <circle cx="400" cy="300" r="95" fill="none" stroke="#dbea4e" stroke-width="30"/>
+    <path d="M400 205v-45M400 440v-45M305 300h-45M540 300h-45" stroke="#dbea4e" stroke-width="8" stroke-linecap="round"/>
+    <text x="400" y="480" text-anchor="middle" fill="#f8f4e9" font-family="serif" font-size="36" font-weight="700">知识的下一站</text>
+    <text x="400" y="531" text-anchor="middle" fill="#a7c492" font-family="sans-serif" font-size="14" letter-spacing="5">PASS IT ON</text>
+  </g>
+  <text x="45" y="62" fill="#183c2a" font-family="sans-serif" font-size="13" font-weight="700" letter-spacing="4">CONDITION / 90%</text>
+</svg>
