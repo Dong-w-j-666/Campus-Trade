@@ -235,6 +235,7 @@ CREATE TABLE t_message (
   created_at  DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (message_id),
   KEY idx_msg_receiver (receiver_id, is_read),
+  KEY idx_msg_order_time (order_id, message_id),
   CONSTRAINT fk_msg_sender FOREIGN KEY (sender_id) REFERENCES t_user (user_id),
   CONSTRAINT fk_msg_receiver FOREIGN KEY (receiver_id) REFERENCES t_user (user_id),
   CONSTRAINT fk_msg_order FOREIGN KEY (order_id) REFERENCES t_order (order_id) ON DELETE SET NULL

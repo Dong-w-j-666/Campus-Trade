@@ -258,6 +258,12 @@ watch(role, loadOrders)
           </div>
 
           <div v-if="role === 'buyer'" class="order-actions">
+            <RouterLink
+              class="button button-ghost button-small"
+              :to="{ name: 'messages', query: { order: order.id } }"
+            >
+              联系卖家
+            </RouterLink>
             <template v-if="order.status === 'UNPAID'">
               <button
                 class="button button-ghost button-small"
@@ -308,6 +314,12 @@ watch(role, loadOrders)
             </template>
           </div>
           <div v-else class="order-actions">
+            <RouterLink
+              class="button button-ghost button-small"
+              :to="{ name: 'messages', query: { order: order.id } }"
+            >
+              联系买家
+            </RouterLink>
             <span v-if="order.status === 'UNPAID'" class="settled-note">等待买家付款</span>
             <span v-else-if="order.status === 'PAID'" class="settled-note">等待与买家当面交接</span>
             <template v-else-if="order.status === 'FINISHED'">

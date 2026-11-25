@@ -16,8 +16,10 @@ cd "$ROOT_DIR/web"
 "${PACKAGE_MANAGER[@]}" install
 "${PACKAGE_MANAGER[@]}" run build
 
-mkdir -p "$ROOT_DIR/server/src/main/resources/static"
-cp -R "$ROOT_DIR/web/dist/." "$ROOT_DIR/server/src/main/resources/static/"
+STATIC_DIR="$ROOT_DIR/server/src/main/resources/static"
+rm -rf -- "$STATIC_DIR/assets"
+mkdir -p "$STATIC_DIR"
+cp -R "$ROOT_DIR/web/dist/." "$STATIC_DIR/"
 
 cd "$ROOT_DIR/server"
 mvn -DskipTests package

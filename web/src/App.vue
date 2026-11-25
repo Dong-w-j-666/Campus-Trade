@@ -1,18 +1,52 @@
 <script setup>
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import { RouterLink, RouterView, useRoute, useRouter } from 'vue-router'
+import { api } from './api'
 import { logout, restoreSession, session } from './session'
 
 const router = useRouter()
 const route = useRoute()
 const mobileOpen = ref(false)
+const unreadCount = ref(0)
+let unreadTimer = null
 
 const initials = computed(() => session.user?.realName?.slice(-2) || '同学')
 const isMarket = computed(() => route.name === 'home')
+const unreadLabel = computed(() => (unreadCount.value > 99 ? '99+' : unreadCount.value))
 
 onMounted(() => {
   restoreSession()
+  unreadTimer = window.setInterval(loadUnread, 5000)
 })
+
+onUnmounted(() => {
+  if (unreadTimer) window.clearInterval(unreadTimer)
+})
+
+watch(
+  () => session.user?.id,
+  async (userId) => {
+    if (!userId) {
+      unreadCount.value = 0
+      return
+    }
+    await loadUnread()
+  },
+  { immediate: true }
+)
+
+async function loadUnread() {
+  if (!session.user) {
+    unreadCount.value = 0
+    return
+  }
+  try {
+    const result = await api.get('/messages/unread-count')
+    unreadCount.value = Number(result.count || 0)
+  } catch {
+    // Keep the last known badge value when the network is temporarily unavailable.
+  }
+}
 
 async function signOut() {
   await logout()
@@ -55,6 +89,10 @@ function closeMobile() {
           <RouterLink to="/" @click="closeMobile">逛市场</RouterLink>
           <RouterLink to="/publish" @click="closeMobile">发布闲置</RouterLink>
           <RouterLink to="/orders" @click="closeMobile">我的订单</RouterLink>
+          <RouterLink to="/messages" @click="closeMobile">
+            消息
+            <span v-if="unreadCount" class="nav-unread">{{ unreadLabel }}</span>
+          </RouterLink>
           <RouterLink to="/my-goods" @click="closeMobile">我的发布</RouterLink>
 
           <div class="mobile-account">

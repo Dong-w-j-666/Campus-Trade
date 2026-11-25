@@ -14,7 +14,8 @@
 | 订单 | 事务锁货、防止购买自己的商品、取消订单、沙箱支付、退款、确认收货 |
 | 结算 | 创建支付流水、退款状态、98% 卖家应结金额、结算状态 |
 | 评价 | 仅完成后交易互评、1—5 星、评价标签、重复评价拦截、信用分与等级更新 |
-| 页面 | 桌面端与手机端自适应，包含首页、登录注册、详情、发布、订单和我的发布 |
+| 消息 | 订单内买卖双方沟通、4 秒短轮询刷新、未读角标、系统通知、手机号自动打码 |
+| 页面 | 桌面端与手机端自适应，包含首页、登录注册、详情、发布、订单、消息中心和我的发布 |
 | 部署 | 本地 Jar 运行、Docker Compose 部署、数据库初始化脚本 |
 
 ## 技术架构
@@ -165,6 +166,13 @@ APP_HOST_PORT=18080 MYSQL_HOST_PORT=13307 docker compose up --build
 | `POST` | `/api/evaluations` | 买卖双方提交交易评价 |
 | `GET` | `/api/evaluations/orders/{orderId}` | 交易方查看订单双方评价 |
 | `GET` | `/api/evaluations/users/{userId}` | 查看卖家信用和近期评价 |
+| `GET` | `/api/messages/conversations` | 查看订单会话和未读数量 |
+| `GET` | `/api/messages/orders/{orderId}` | 查看订单消息 |
+| `POST` | `/api/messages/orders/{orderId}` | 发送订单消息 |
+| `POST` | `/api/messages/orders/{orderId}/read` | 标记订单消息已读 |
+| `GET` | `/api/messages/notifications` | 查看系统通知 |
+| `POST` | `/api/messages/notifications/read` | 标记系统通知已读 |
+| `GET` | `/api/messages/unread-count` | 获取当前用户未读消息数 |
 
 ## 数据库
 
@@ -250,5 +258,6 @@ Campus-Trade/
 - 当前支付、退款与结算为沙箱状态流转，不调用真实支付平台。
 - 图片保存到本地目录；生产环境应改为对象存储与图片压缩。
 - 交易评价已实现，评价按报告规则调整被评价人的信用分，并将结果限制在 0—100。
-- 尚未实现实时聊天、举报审核和完整管理后台。
+- 消息中心采用短轮询实现近实时刷新，尚未接入 WebSocket；手机号会以 `138****8000` 形式展示。
+- 尚未实现举报审核和完整管理后台。
 - 下一步可增加 JUnit/API 集成测试、WebSocket 消息、统一审计日志，并在 API 稳定后接入微信小程序。
