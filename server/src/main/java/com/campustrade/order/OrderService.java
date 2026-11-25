@@ -31,7 +31,17 @@ public class OrderService {
                     LIMIT 1) AS goods_image,
                    buyer.real_name AS buyer_name,
                    seller.real_name AS seller_name,
-                   p.refund_status, p.settlement_status
+                   p.refund_status, p.settlement_status,
+                   EXISTS(
+                     SELECT 1 FROM t_evaluation buyer_eval
+                     WHERE buyer_eval.order_id = o.order_id
+                       AND buyer_eval.evaluator_id = o.buyer_id
+                   ) AS buyer_evaluated,
+                   EXISTS(
+                     SELECT 1 FROM t_evaluation seller_eval
+                     WHERE seller_eval.order_id = o.order_id
+                       AND seller_eval.evaluator_id = g.seller_id
+                   ) AS seller_evaluated
             FROM t_order o
             JOIN t_goods g ON g.goods_id = o.goods_id
             JOIN t_user buyer ON buyer.user_id = o.buyer_id
@@ -57,7 +67,9 @@ public class OrderService {
             toLocalDateTime(resultSet.getTimestamp("paid_at")),
             toLocalDateTime(resultSet.getTimestamp("finished_at")),
             resultSet.getString("refund_status"),
-            resultSet.getString("settlement_status")
+            resultSet.getString("settlement_status"),
+            resultSet.getBoolean("buyer_evaluated"),
+            resultSet.getBoolean("seller_evaluated")
     );
 
     private final JdbcTemplate jdbcTemplate;

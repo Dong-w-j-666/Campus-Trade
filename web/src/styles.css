@@ -2133,6 +2133,122 @@ h3 {
   white-space: pre-wrap;
 }
 
+.reputation-section {
+  margin-top: 24px;
+  padding: 34px 38px;
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  background: var(--paper-deep);
+}
+
+.reputation-heading {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 28px;
+  margin-bottom: 24px;
+}
+
+.reputation-heading h2 {
+  margin: 9px 0 0;
+  font-family: "Songti SC", "STSong", serif;
+  font-size: 30px;
+}
+
+.reputation-score {
+  display: grid;
+  grid-template-columns: auto auto;
+  align-items: center;
+  column-gap: 10px;
+  text-align: right;
+}
+
+.reputation-score strong {
+  grid-row: 1 / 3;
+  color: var(--moss);
+  font-family: "Songti SC", "STSong", serif;
+  font-size: 40px;
+  line-height: 1;
+}
+
+.reputation-score span {
+  color: var(--amber);
+  font-size: 15px;
+  letter-spacing: 0.08em;
+}
+
+.reputation-score small {
+  color: var(--muted);
+  font-size: 9px;
+}
+
+.review-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.review-card {
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--surface);
+}
+
+.review-meta {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.review-meta strong {
+  font-size: 11px;
+}
+
+.review-meta span {
+  color: var(--amber);
+  font-size: 10px;
+  letter-spacing: 0.05em;
+}
+
+.review-meta time {
+  margin-left: auto;
+  color: var(--muted);
+  font-size: 8px;
+}
+
+.review-card p {
+  margin: 12px 0;
+  color: var(--ink-soft);
+  font-size: 11px;
+  line-height: 1.75;
+}
+
+.review-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.review-tags span {
+  padding: 4px 8px;
+  border-radius: 999px;
+  color: var(--moss);
+  background: rgba(30, 106, 72, 0.08);
+  font-size: 8px;
+  font-weight: 700;
+}
+
+.reputation-empty {
+  margin: 0;
+  padding: 23px;
+  border: 1px dashed var(--line-strong);
+  border-radius: 15px;
+  color: var(--muted);
+  font-size: 11px;
+  text-align: center;
+}
+
 .muted-copy {
   color: var(--muted) !important;
 }
@@ -2814,6 +2930,125 @@ h3 {
   font-size: 9px;
 }
 
+.evaluated-note {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--moss);
+  font-size: 9px;
+  font-weight: 700;
+}
+
+.evaluated-note::before {
+  content: "✓";
+}
+
+.evaluation-panel {
+  padding: 24px;
+  border-top: 1px solid var(--line);
+  background:
+    linear-gradient(135deg, rgba(219, 234, 78, 0.11), transparent 45%),
+    var(--paper);
+}
+
+.evaluation-panel > header {
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 20px;
+}
+
+.evaluation-panel h3 {
+  margin: 7px 0 5px;
+  font-family: "Songti SC", "STSong", serif;
+  font-size: 24px;
+}
+
+.evaluation-panel header p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 10px;
+  line-height: 1.7;
+}
+
+.evaluation-close {
+  display: grid;
+  width: 32px;
+  height: 32px;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 50%;
+  color: var(--muted);
+  background: rgba(23, 37, 29, 0.06);
+  cursor: pointer;
+  font-size: 19px;
+}
+
+.rating-picker {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-bottom: 14px;
+}
+
+.rating-picker button {
+  padding: 0;
+  color: rgba(23, 37, 29, 0.16);
+  background: transparent;
+  cursor: pointer;
+  font-size: 29px;
+  line-height: 1;
+  transition: color 150ms ease, transform 150ms ease;
+}
+
+.rating-picker button:hover,
+.rating-picker button.active {
+  color: var(--amber);
+  transform: translateY(-1px);
+}
+
+.rating-picker strong {
+  margin-left: 8px;
+  color: var(--muted);
+  font-size: 10px;
+}
+
+.evaluation-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-bottom: 16px;
+}
+
+.evaluation-tags button {
+  padding: 8px 12px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--surface);
+  cursor: pointer;
+  color: var(--muted);
+  font-size: 9px;
+  transition: color 150ms ease, border-color 150ms ease, background 150ms ease;
+}
+
+.evaluation-tags button:hover,
+.evaluation-tags button.active {
+  border-color: var(--moss);
+  color: var(--moss);
+  background: rgba(30, 106, 72, 0.07);
+}
+
+.evaluation-panel .field {
+  max-width: 720px;
+}
+
+.evaluation-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 15px;
+}
+
 .order-skeleton {
   display: grid;
   grid-template-columns: 100px 1fr;
@@ -3184,6 +3419,14 @@ h3 {
     padding: 34px;
   }
 
+  .reputation-section {
+    padding: 28px 24px;
+  }
+
+  .review-list {
+    grid-template-columns: 1fr;
+  }
+
   .publish-layout {
     grid-template-columns: 1fr;
   }
@@ -3504,10 +3747,25 @@ h3 {
   .order-actions {
     width: 100%;
     justify-content: flex-end;
+    flex-wrap: wrap;
   }
 
   .order-progress {
     width: 100%;
+  }
+
+  .evaluation-panel {
+    padding: 20px 15px;
+  }
+
+  .reputation-heading {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .reputation-score {
+    text-align: left;
   }
 
   .seller-stats > div {

@@ -13,6 +13,23 @@ const orders = ref([])
 const loading = ref(true)
 const error = ref('')
 const busyId = ref(null)
+const notice = ref('')
+const evaluationOrder = ref(null)
+const evaluationScore = ref(5)
+const evaluationContent = ref('')
+const selectedTags = ref([])
+const evaluationBusy = ref(false)
+const evaluationError = ref('')
+
+const evaluationTags = [
+  '描述相符',
+  '交易爽快',
+  '守约',
+  '沟通顺畅',
+  '礼貌友好',
+  '打包仔细',
+  '响应及时'
+]
 
 const filters = [
   { id: 'all', label: '全部' },
@@ -66,6 +83,57 @@ async function perform(order, actionName) {
   }
 }
 
+function currentOrderEvaluated(order) {
+  return role.value === 'buyer' ? order.buyerEvaluated : order.sellerEvaluated
+}
+
+function openEvaluation(order) {
+  evaluationOrder.value = order.id
+  evaluationScore.value = 5
+  evaluationContent.value = ''
+  selectedTags.value = []
+  evaluationError.value = ''
+  notice.value = ''
+}
+
+function closeEvaluation() {
+  if (evaluationBusy.value) return
+  evaluationOrder.value = null
+  evaluationError.value = ''
+}
+
+function toggleEvaluationTag(tag) {
+  if (selectedTags.value.includes(tag)) {
+    selectedTags.value = selectedTags.value.filter((item) => item !== tag)
+  } else if (selectedTags.value.length < 5) {
+    selectedTags.value = [...selectedTags.value, tag]
+  }
+}
+
+async function submitEvaluation(order) {
+  evaluationBusy.value = true
+  evaluationError.value = ''
+  try {
+    const result = await api.post('/evaluations', {
+      orderId: order.id,
+      score: evaluationScore.value,
+      content: evaluationContent.value,
+      tags: selectedTags.value
+    })
+    if (role.value === 'buyer') {
+      order.buyerEvaluated = true
+    } else {
+      order.sellerEvaluated = true
+    }
+    evaluationOrder.value = null
+    notice.value = `评价已提交，对方当前信用分为 ${result.targetCreditScore}（${result.targetCreditLevel}）。`
+  } catch (requestError) {
+    evaluationError.value = requestError.message
+  } finally {
+    evaluationBusy.value = false
+  }
+}
+
 onMounted(loadOrders)
 watch(role, loadOrders)
 </script>
@@ -86,6 +154,14 @@ watch(role, loadOrders)
       <div>
         <strong>订单已创建，商品已为你锁定</strong>
         <p>请在下方完成沙箱支付，再与卖家约定见面时间。</p>
+      </div>
+    </div>
+
+    <div v-if="notice" class="success-banner">
+      <span>✓</span>
+      <div>
+        <strong>评价已生效</strong>
+        <p>{{ notice }}</p>
       </div>
     </div>
 
@@ -218,18 +294,106 @@ watch(role, loadOrders)
                 {{ busyId === order.id ? '处理中…' : '确认收货' }}
               </button>
             </template>
-            <span v-else-if="order.status === 'FINISHED'" class="settled-note">
-              已结算给卖家 {{ money(order.amount * 0.98) }}
-            </span>
+            <template v-else-if="order.status === 'FINISHED'">
+              <span class="settled-note">已结算给卖家 {{ money(order.amount * 0.98) }}</span>
+              <button
+                v-if="!currentOrderEvaluated(order)"
+                class="button button-outline button-small"
+                type="button"
+                @click="openEvaluation(order)"
+              >
+                评价交易
+              </button>
+              <span v-else class="evaluated-note">已评价</span>
+            </template>
           </div>
           <div v-else class="order-actions">
             <span v-if="order.status === 'UNPAID'" class="settled-note">等待买家付款</span>
             <span v-else-if="order.status === 'PAID'" class="settled-note">等待与买家当面交接</span>
-            <span v-else-if="order.status === 'FINISHED'" class="settled-note">
-              已结算 {{ money(order.amount * 0.98) }}
-            </span>
+            <template v-else-if="order.status === 'FINISHED'">
+              <span class="settled-note">已结算 {{ money(order.amount * 0.98) }}</span>
+              <button
+                v-if="!currentOrderEvaluated(order)"
+                class="button button-outline button-small"
+                type="button"
+                @click="openEvaluation(order)"
+              >
+                评价买家
+              </button>
+              <span v-else class="evaluated-note">已评价</span>
+            </template>
           </div>
         </footer>
+
+        <section v-if="evaluationOrder === order.id" class="evaluation-panel">
+          <header>
+            <div>
+              <span class="section-index">TRADE REVIEW</span>
+              <h3>这次交易体验如何？</h3>
+              <p>
+                你正在评价
+                <strong>{{ role === 'buyer' ? order.sellerName : order.buyerName }}</strong>
+                ，评价提交后不可重复修改。
+              </p>
+            </div>
+            <button class="evaluation-close" type="button" aria-label="关闭评价" @click="closeEvaluation">
+              ×
+            </button>
+          </header>
+
+          <div class="rating-picker" role="radiogroup" aria-label="交易评分">
+            <button
+              v-for="score in 5"
+              :key="score"
+              type="button"
+              role="radio"
+              :aria-checked="evaluationScore === score"
+              :class="{ active: evaluationScore >= score }"
+              @click="evaluationScore = score"
+            >
+              ★
+            </button>
+            <strong>{{ evaluationScore }} 星</strong>
+          </div>
+
+          <div class="evaluation-tags">
+            <button
+              v-for="tag in evaluationTags"
+              :key="tag"
+              type="button"
+              :class="{ active: selectedTags.includes(tag) }"
+              @click="toggleEvaluationTag(tag)"
+            >
+              {{ tag }}
+            </button>
+          </div>
+
+          <label class="field">
+            <span>补充评价（选填）</span>
+            <textarea
+              v-model="evaluationContent"
+              maxlength="500"
+              rows="3"
+              placeholder="说说商品状态、沟通或当面交易的感受"
+            ></textarea>
+            <small class="field-foot">{{ evaluationContent.length }} / 500</small>
+          </label>
+
+          <p v-if="evaluationError" class="inline-error">{{ evaluationError }}</p>
+          <div class="evaluation-actions">
+            <button class="button button-ghost button-small" type="button" @click="closeEvaluation">
+              暂不评价
+            </button>
+            <button
+              class="button button-dark button-small"
+              type="button"
+              :disabled="evaluationBusy"
+              @click="submitEvaluation(order)"
+            >
+              {{ evaluationBusy ? '正在提交…' : '提交评价' }}
+            </button>
+          </div>
+        </section>
       </article>
     </div>
   </div>

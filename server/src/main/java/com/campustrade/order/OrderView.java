@@ -21,6 +21,8 @@ public record OrderView(
         LocalDateTime paidAt,
         LocalDateTime finishedAt,
         String refundStatus,
-        String settlementStatus
+        String settlementStatus,
+        boolean buyerEvaluated,
+        boolean sellerEvaluated
 ) {
 }

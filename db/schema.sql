@@ -187,6 +187,7 @@ CREATE TABLE t_evaluation (
   created_at    DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (evaluation_id),
   UNIQUE KEY uk_eval_order_evaluator (order_id, evaluator_id),
+  KEY idx_eval_target (target_id, created_at),
   CONSTRAINT fk_eval_order FOREIGN KEY (order_id) REFERENCES t_order (order_id),
   CONSTRAINT fk_eval_evaluator FOREIGN KEY (evaluator_id) REFERENCES t_user (user_id),
   CONSTRAINT fk_eval_target FOREIGN KEY (target_id) REFERENCES t_user (user_id),

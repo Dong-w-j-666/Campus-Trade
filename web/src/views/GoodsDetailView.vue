@@ -15,6 +15,7 @@ const brokenImages = ref(new Set())
 const buying = ref(false)
 const buyError = ref('')
 const remark = ref('')
+const reputation = ref(null)
 
 const isOwner = computed(
   () => session.user && goods.value && session.user.id === goods.value.seller.id
@@ -31,14 +32,25 @@ const currentImage = computed(() => {
 async function loadGoods() {
   loading.value = true
   error.value = ''
+  reputation.value = null
   try {
     goods.value = await api.get(`/goods/${route.params.id}`)
     activeImage.value = 0
+    try {
+      reputation.value = await api.get(`/evaluations/users/${goods.value.seller.id}`)
+    } catch {
+      reputation.value = null
+    }
   } catch (requestError) {
     error.value = requestError.message
   } finally {
     loading.value = false
   }
+}
+
+function scoreStars(score) {
+  const rounded = Math.max(0, Math.min(5, Math.round(Number(score || 0))))
+  return `${'★'.repeat(rounded)}${'☆'.repeat(5 - rounded)}`
 }
 
 function markBroken(url) {
@@ -167,7 +179,10 @@ watch(() => route.params.id, loadGoods)
             <div class="seller-copy">
               <span>发布同学</span>
               <strong>{{ goods.seller.name }}</strong>
-              <small>{{ goods.seller.campus }} · 信用分 {{ goods.seller.creditScore }}</small>
+              <small>
+                {{ goods.seller.campus }} · 信用分 {{ goods.seller.creditScore }}
+                <template v-if="reputation"> · {{ reputation.creditLevel }}</template>
+              </small>
             </div>
             <span class="verified-badge">
               <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -224,6 +239,39 @@ watch(() => route.params.id, loadGoods)
           <p v-if="goods.description">{{ goods.description }}</p>
           <p v-else class="muted-copy">卖家暂未填写详细说明，可以在提交订单时留言询问。</p>
         </div>
+      </section>
+
+      <section v-if="reputation" class="reputation-section">
+        <header class="reputation-heading">
+          <div>
+            <span class="section-index">SELLER REPUTATION</span>
+            <h2>卖家口碑</h2>
+          </div>
+          <div class="reputation-score">
+            <strong>{{ reputation.averageScore || '—' }}</strong>
+            <span>{{ scoreStars(reputation.averageScore) }}</span>
+            <small>{{ reputation.evaluationCount }} 条交易评价</small>
+          </div>
+        </header>
+
+        <div v-if="reputation.recentEvaluations.length" class="review-list">
+          <article
+            v-for="review in reputation.recentEvaluations.slice(0, 4)"
+            :key="review.id"
+            class="review-card"
+          >
+            <div class="review-meta">
+              <strong>{{ review.evaluatorName }}</strong>
+              <span>{{ scoreStars(review.score) }}</span>
+              <time>{{ dateTime(review.createdAt) }}</time>
+            </div>
+            <p v-if="review.content">{{ review.content }}</p>
+            <div v-if="review.tags.length" class="review-tags">
+              <span v-for="tag in review.tags" :key="tag">{{ tag }}</span>
+            </div>
+          </article>
+        </div>
+        <p v-else class="reputation-empty">还没有交易评价，先完成一单再来看看吧。</p>
       </section>
     </template>
   </div>
