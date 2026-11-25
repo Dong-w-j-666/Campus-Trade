@@ -1,6 +1,6 @@
 # Campus-Trade 校园二手交易平台课程实验
 
-本仓库是“2024 级网络工程第 2 组”软件工程实验的阶段成果，包含实验一至实验五的五份报告、十模块核心业务测试程序、MySQL 建表与示例数据，以及数据库结构和事务校验程序。
+本仓库是“2024 级网络工程第 2 组”软件工程实验的阶段成果，包含实验一、二、三、五、八的报告、十模块核心业务测试程序、MySQL 建表与示例数据，以及数据库结构和事务校验程序。
 
 规划中的完整平台采用 Vue 3、Spring Boot 和 MySQL。当前仓库还没有实现 Vue 前端、Spring Boot 服务或完整的 Web 交易流程；现有 Java 程序是独立运行的实验验证代码。
 
@@ -14,6 +14,7 @@
 | 实验三 软件测试 | 10 个模块 × 5 个用例，首轮 40/50、回归 50/50 |
 | MySQL 数据库实验 | 建表、示例数据、支付退款结算字段、7 项结构、联查和事务校验 |
 | 实验五 数据库结构设计 | E-R 转关系模式、14 张表、1NF/2NF/3NF 检查、21 个外键和 MySQL 实测 |
+| 实验八 黑盒与白盒测试 | 8 名组员的等价类测试与逻辑覆盖，69/69 用例通过 |
 
 ## 技术环境
 
@@ -32,13 +33,14 @@
 Campus-Trade/
 ├── src/
 │   ├── CampusMarketTest.java     # 10 模块 × 5 用例的核心业务测试
+│   ├── Experiment8Test.java      # 实验八黑盒等价类与白盒覆盖执行程序
 │   └── DatabaseSmokeTest.java    # MySQL 结构、联查和事务校验
 ├── db/
 │   ├── schema.sql                # 14 张业务表及约束
 │   ├── data.sql                  # 用户、商品、订单等示例数据
 │   ├── db.properties.example     # 数据库连接配置模板
 │   └── README.md                 # MySQL 实验操作说明
-├── docs/                         # 实验一至实验三五份 DOCX 报告
+├── docs/                         # 实验一、二、三、五、八共六份 DOCX 报告
 ├── lib/                          # MySQL JDBC 驱动
 └── .idea/                        # IntelliJ IDEA 工程配置
 ```
@@ -62,6 +64,17 @@ java -cp out/production/Campus-Trade CampusMarketTest --legacy
 ```
 
 两条命令分别生成 `测试结果_回归.csv` 和 `测试结果_首轮.csv`。10 个失败用例对应 BUG-01 至 BUG-10。
+
+实验八按第八次实验要求，由 8 名组员分别完成一个模块的黑盒等价类测试和一个代码片段的白盒逻辑覆盖测试：
+
+```bash
+javac -encoding UTF-8 -d out/production/Campus-Trade \
+  src/CampusMarketTest.java src/Experiment8Test.java
+
+java -cp out/production/Campus-Trade Experiment8Test
+```
+
+预期 69/69 个用例通过，并生成 `测试结果_实验八.csv`。
 
 ## MySQL 数据库实验
 
@@ -101,6 +114,7 @@ java -cp "out/production/Campus-Trade:lib/mysql-connector-j-8.0.31.jar" \
 - [实验三 软件设计](<docs/实验三 软件设计实验报告.docx>)
 - [实验三 软件测试](<docs/实验三 软件测试实验报告.docx>)
 - [实验五 数据库结构设计](<docs/实验五 数据库结构设计实验报告.docx>)
+- [实验八 软件测试](<docs/实验八 软件测试实验报告.docx>)
 
 ## 当前限制
 
