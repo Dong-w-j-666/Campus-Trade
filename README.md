@@ -40,7 +40,7 @@ Campus-Trade/
 │   ├── data.sql                  # 用户、商品、订单等示例数据
 │   ├── db.properties.example     # 数据库连接配置模板
 │   └── README.md                 # MySQL 实验操作说明
-├── docs/                         # 实验一、二、三、五、八共六份 DOCX 报告
+├── docs/                         # 实验 DOCX 报告与实验八个人测试分册
 ├── lib/                          # MySQL JDBC 驱动
 └── .idea/                        # IntelliJ IDEA 工程配置
 ```
@@ -115,6 +115,8 @@ java -cp "out/production/Campus-Trade:lib/mysql-connector-j-8.0.31.jar" \
 - [实验三 软件测试](<docs/实验三 软件测试实验报告.docx>)
 - [实验五 数据库结构设计](<docs/实验五 数据库结构设计实验报告.docx>)
 - [实验八 软件测试](<docs/实验八 软件测试实验报告.docx>)
+- [实验八 八人个人测试报告](<docs/实验八 八人个人测试报告/>)
+- [实验八 八人个人测试报告压缩包](<docs/实验八 八人个人测试报告.zip>)
 
 ## 当前限制
 
