@@ -1,0 +1,65 @@
+name: campus-trade-production
+
+services:
+  mysql:
+    image: mysql:8.4
+    restart: unless-stopped
+    command:
+      - --innodb-buffer-pool-size=128M
+      - --performance-schema=OFF
+    environment:
+      MYSQL_ROOT_PASSWORD: "${MYSQL_ROOT_PASSWORD:?Set MYSQL_ROOT_PASSWORD in .env.production}"
+      MYSQL_DATABASE: "${MYSQL_DATABASE:-campus_trade}"
+      MYSQL_USER: "${DB_USERNAME:?Set DB_USERNAME in .env.production}"
+      MYSQL_PASSWORD: "${DB_PASSWORD:?Set DB_PASSWORD in .env.production}"
+      TZ: Asia/Shanghai
+    volumes:
+      - campus_trade_mysql_prod:/var/lib/mysql
+      - ./db/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+      - ./db/data.sql:/docker-entrypoint-initdb.d/02-data.sql:ro
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "mysqladmin ping -h 127.0.0.1 -u root -p\"$${MYSQL_ROOT_PASSWORD}\" --silent",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+      start_period: 20s
+    mem_limit: 768m
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: "3"
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      DB_URL: "jdbc:mysql://mysql:3306/${MYSQL_DATABASE:-campus_trade}?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai&characterEncoding=utf8"
+      DB_USERNAME: "${DB_USERNAME:?Set DB_USERNAME in .env.production}"
+      DB_PASSWORD: "${DB_PASSWORD:?Set DB_PASSWORD in .env.production}"
+      APP_AUTH_SECRET: "${APP_AUTH_SECRET:?Set APP_AUTH_SECRET in .env.production}"
+      APP_SECURE_COOKIE: "${APP_SECURE_COOKIE:-false}"
+      JAVA_TOOL_OPTIONS: "-Xms128m -Xmx384m -XX:MaxMetaspaceSize=192m -XX:+ExitOnOutOfMemoryError"
+    ports:
+      - "${APP_BIND_ADDRESS:-0.0.0.0}:${APP_HOST_PORT:-8080}:8080"
+    volumes:
+      - campus_trade_uploads_prod:/app/uploads
+    mem_limit: 768m
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: "3"
+
+volumes:
+  campus_trade_mysql_prod:
+  campus_trade_uploads_prod:

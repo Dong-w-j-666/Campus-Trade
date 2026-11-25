@@ -1,5 +1,6 @@
 # 数据库密码不要提交
 db/db.properties
+.env.production
 
 # 编译产物
 out/

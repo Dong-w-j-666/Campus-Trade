@@ -113,6 +113,8 @@ pnpm dev
 
 ## Docker 部署
 
+### 本地演示
+
 ```bash
 docker compose up --build
 ```
@@ -129,6 +131,13 @@ APP_HOST_PORT=18080 MYSQL_HOST_PORT=13307 docker compose up --build
 ```
 
 `docker-compose.yml` 中的密码和 `APP_AUTH_SECRET` 仅用于本地演示，正式部署前必须替换。
+
+### 云服务器生产部署
+
+仓库提供独立的 `docker-compose.production.yml`。它使用随机密码、限制 Java 和 MySQL
+内存，并且不向宿主机映射 MySQL 端口。
+
+完整操作步骤见 [轻量服务器部署说明](docs/轻量服务器部署说明.md)。
 
 ## 主要 API
 
@@ -210,7 +219,8 @@ Campus-Trade/
 ├── docs/         实验报告
 ├── scripts/      构建、数据库初始化和本地启动脚本
 ├── Dockerfile
-└── docker-compose.yml
+├── docker-compose.yml
+└── docker-compose.production.yml
 ```
 
 ## 当前边界与下一步
